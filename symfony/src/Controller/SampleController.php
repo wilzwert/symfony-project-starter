@@ -8,6 +8,7 @@ use App\Service\SampleEntityService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Routing\Attribute\Route;
@@ -39,10 +40,15 @@ final class SampleController extends AbstractController
     #[Route('', methods: ['POST'])]
     public function create(#[MapRequestPayload] CreateSampleEntityRequest $createSampleEntityRequest): JsonResponse
     {
-        return $this->json(new SampleEntityResponse($this->sampleEntityService->create($createSampleEntityRequest->getName())));
+        $created = $this->sampleEntityService->create($createSampleEntityRequest->getName());
+        return $this->json(
+            new SampleEntityResponse($created),
+            Response::HTTP_CREATED,
+            ['Location' => $this->generateUrl('api_samples_detail', ['id' => $created->getId()])]
+        );
     }
 
-    #[Route('/{id}', methods: ['GET'])]
+    #[Route('/{id}', name: 'api_samples_detail', methods: ['GET'])]
     public function get(int $id): JsonResponse
     {
         return $this->json(new SampleEntityResponse($this->sampleEntityService->getById($id)));
