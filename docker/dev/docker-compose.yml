@@ -1,4 +1,4 @@
-name: my-awesome-app
+# please use .env.dist to set useful environment vars
 
 services:
   app:
@@ -13,7 +13,7 @@ services:
         GID: ${GID:-1000}
         DOCKER_GID: ${DOCKER_GID:-1001}
         APP_USER: ${APP_USER:-symfony}
-    container_name: my-awesome-app
+    container_name: "${APP_NAME}-web"
     restart: unless-stopped
 
     # For Windows (WSl) or if you are unable to pass the actual docker group id DOCKER_GID arg
@@ -63,44 +63,44 @@ services:
       - db
       - redis
     networks:
-      - my_awesome_app_net
+      - default
 
   db:
     image: postgres:16
-    container_name: my-awesome-app-db
+    container_name: "${APP_NAME}-db"
     restart: unless-stopped
     environment:
-      POSTGRES_DB: ${POSTGRES_DB:-my-awesome-app}
-      POSTGRES_USER: ${POSTGRES_USER:-my-awesome-app}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-!ChangeThisAwesomeSecret!}
+      POSTGRES_DB: ${APP_NAME}
+      POSTGRES_USER: ${APP_NAME}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     healthcheck:
-      test: [ "CMD", "pg_isready", "-d", "${POSTGRES_DB:-my-awesome-app}", "-U", "${POSTGRES_USER:-my-awesome-app}" ]
+      test: [ "CMD", "pg_isready", "-d", "${APP_NAME}", "-U", "${APP_NAME}" ]
       timeout: 5s
       retries: 5
       start_period: 60s
     # uncomment if you want to directly access your db for querying...
-    # Change port if necessary, e.g. if you host already exposes other postgres containers
+    # Change port if necessary, e.g. if you host already exposes another postgres container on the same port
     # ports:
     #  - "5432:5432"
     volumes:
       - ./postgresql_data:/var/lib/postgresql/data
     networks:
-      - my_awesome_app_net
+      - default
 
   redis:
     image: redis:7
-    container_name: my-awesome-app-redis
+    container_name: "${APP_NAME}-redis"
     restart: unless-stopped
     # uncomment if you want to directly access your redis container for data visualization...
     # Change port if necessary, e.g. if you host already exposes other redis containers
     # ports:
     #  - "6379:6379"
     networks:
-      - my_awesome_app_net
+      - default
 
 volumes:
   db_data:
   
 networks:
-  my_awesome_app_net:
+  default:
     driver: bridge
