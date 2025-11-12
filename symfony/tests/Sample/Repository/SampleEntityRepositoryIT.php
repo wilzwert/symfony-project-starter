@@ -26,10 +26,20 @@ class SampleEntityRepositoryIT extends KernelTestCase
     #[Test]
     public function shouldFindById(): void
     {
-        $found = $this->repository->findOneById(1);
+        $found = $this->repository->findById(1);
 
         self::assertNotNull($found);
-        self::assertSame('Sample test entity', $found->getName());
+        self::assertSame('sample test entity', $found->getName());
+    }
+
+    #[Test]
+    public function shouldFindByName(): void
+    {
+        $found = $this->repository->findByName('Sample');
+
+        self::assertCount(1, $found);
+        self::assertSame('sample test entity', $found[0]->getName());
+        self::assertSame(1, $found[0]->getId());
     }
 
 }

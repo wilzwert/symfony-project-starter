@@ -2,6 +2,7 @@
 
 namespace App\Tests\Bootstrap;
 
+use Exception;
 use PHPUnit\Event\TestRunner\ExecutionStarted;
 use PHPUnit\Event\TestRunner\ExecutionStartedSubscriber;
 use Symfony\Component\Process\Process;
@@ -20,7 +21,7 @@ readonly class DoctrineFixturesSubscriber implements ExecutionStartedSubscriber
     }
 
     /**
-     * @throws \Exception
+     * @throws Exception
      */
     public function notify(ExecutionStarted $event): void
     {
@@ -29,8 +30,10 @@ readonly class DoctrineFixturesSubscriber implements ExecutionStartedSubscriber
         }
 
         if (!$this->dbContainerHandler->isStarted()) {
-            throw new \Exception('Db container MUST be started before loading test fixtures.');
+            throw new Exception('Db container MUST be started before loading test fixtures.');
         }
+
+        echo "IMPORTING FIXTURES\n";
 
         $env = [
             'DATABASE_URL' => getenv('DATABASE_URL'),

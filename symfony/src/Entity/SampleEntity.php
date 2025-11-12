@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\SampleEntityRepository;
+use DateTimeImmutable;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: SampleEntityRepository::class)]
@@ -17,18 +18,20 @@ class SampleEntity
     private ?string $name = null;
 
     #[ORM\Column(type: "datetime_immutable")]
-    private \DateTimeImmutable $createdAt;
+    private DateTimeImmutable $createdAt;
 
 
     /**
      * @param int|null $id
      * @param string|null $name
+     * @param DateTimeImmutable|null $createdAt
      */
-    public function __construct(?int $id, ?string $name, ?\DateTimeImmutable $createdAt = null)
+    public function __construct(?int $id, ?string $name, ?DateTimeImmutable $createdAt = null)
     {
         $this->id = $id;
-        $this->name = $name;
-        $this->createdAt = $createdAt ?? new \DateTimeImmutable();
+        // storing the name in lowercase helps with case-sensitive indexes and for searching and consistency
+        $this->name = mb_strtolower($name);
+        $this->createdAt = $createdAt ?? new DateTimeImmutable();
     }
 
     public function getId(): ?int
@@ -50,12 +53,13 @@ class SampleEntity
 
     public function setName(string $name): static
     {
-        $this->name = $name;
+        // storing the name in lowercase helps with case-sensitive indexes and for searching and consistency
+        $this->name = mb_strtolower($name);
 
         return $this;
     }
 
-    public function getCreatedAt(): \DateTimeImmutable
+    public function getCreatedAt(): DateTimeImmutable
     {
         return $this->createdAt;
     }

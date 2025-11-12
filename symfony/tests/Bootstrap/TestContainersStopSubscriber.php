@@ -29,7 +29,7 @@ readonly class TestContainersStopSubscriber implements ExecutionFinishedSubscrib
             $this->dbTestContainerHandler->stop();
 
             // cleanup temporary generated env file
-            $this->fs->remove('.env.test.local');
+            $this->fs->remove('.env.dist.test.local');
         }
     }
 }

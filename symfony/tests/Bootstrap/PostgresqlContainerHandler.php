@@ -23,7 +23,7 @@ final class PostgresqlContainerHandler extends AbstractTestContainerHandler
     protected function createContainer(): GenericContainer
     {
         return new PostgresContainer(self::POSTGRESQL_VERSION)
-            ->withWait(new WaitForLog('ready to accept connections'))
+            ->withWait(new WaitForLog('ready to accept connections', false, 30000))
         ;
     }
 }

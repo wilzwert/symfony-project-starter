@@ -33,7 +33,7 @@ readonly class TestContainersStartSubscriber implements ExecutionStartedSubscrib
             $envVars = array_merge($envVars, $this->redisTestContainerHandler->getEnvVars());
 
             // generate a temporary env file and force symfony reload env and use our generated env vars
-            $envFile = '.env.test.local';
+            $envFile = '.env.dist.test.local';
             $this->fs->dumpFile($envFile, implode("\n", $envVars));
             $dotenv = new Dotenv();
             $dotenv->overload($envFile);
