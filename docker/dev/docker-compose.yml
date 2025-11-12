@@ -1,0 +1,104 @@
+services:
+  app:
+    build:
+      context: ../..
+      dockerfile: docker/dev/frankenphp/Dockerfile
+      # allow linux hosts to resolve host.docker.internal
+      extra_hosts:
+        - "host.docker.internal:host-gateway"
+      args:
+        UID: ${UID:-1000}
+        GID: ${GID:-1000}
+        DOCKER_GID: ${DOCKER_GID:-1001}
+        APP_USER: ${APP_USER:-symfony}
+    container_name: my-awesome-app
+    restart: unless-stopped
+
+    # For Windows (WSl) or if you are unable to pass the actual docker group id DOCKER_GID arg
+    # Running as root allows changing /var/run/docker.sock ownership so that TestContainers can work
+    # the app will then run as ${APP_USER}
+    user: root
+    volumes:
+      # Mounting files / directories separately for performance on windows hosts
+      - ../../symfony/src:/app/src
+      - ../../symfony/tests:/app/tests
+      - ../../symfony/config:/app/config
+      - ../../symfony/coverage:/app/coverage
+      - ../../symfony/migrations:/app/migrations
+      - ../../symfony/templates:/app/templates
+      - ../../symfony/public:/app/public
+      - ../../symfony/composer.json:/app/composer.json
+      - ../../symfony/composer.lock:/app/composer.lock
+      - ../../symfony/.env:/app/.env
+      - ../../symfony/.env.dev:/app/.env.dev
+      - ../../symfony/.env.test:/app/.env.test
+      - ../../symfony/phpunit.xml:/app/phpunit.xml
+
+      # Mounting the vendor directory as a volume on a Windows host results in major performance issues
+      # You can uncomment this line if you host runs on linux or macOS
+      # If your host runs under windows, not mounting vendor implies that all composer update/install/require commands
+      # must be run both in the container and in the host if you want your IDE to be able to browse the vendor dir (for autocomplete...)
+      # - ../../symfony/vendor:/app/vendor
+
+      # Windows (WSL) / Linux
+      # Mounting docker socket is necessary to enable TestContainers to create containers
+      # On windows hosts, you may be able to comment this line, expose the docker API via TCP in Docker Desktop
+      # and then set DOCKER_HOST env variable, although it's not recommended
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - XDEBUG_MODE=debug
+      - XDEBUG_START_WITH_REQUEST=yes
+      - XDEBUG_CONFIG=client_host=host.docker.internal
+
+      # Linux/WSL2: Testcontainers should use the mounted socket
+      # macOS: to allow Testcontainers to create containers, please expose the docker API with TCP in Docker Desktop
+      # Then uncomment the DOCKER_HOST var below and change port if necessary
+      # DOCKER_HOST: tcp://host.docker.internal:2375
+
+    ports:
+      - "8080:80"   # FrankenPHP
+    depends_on:
+      - db
+      - redis
+    networks:
+      - my_awesome_app_net
+
+  db:
+    image: postgres:16
+    container_name: my-awesome-app-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-my-awesome-app}
+      POSTGRES_USER: ${POSTGRES_USER:-my-awesome-app}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-!ChangeThisAwesomeSecret!}
+    healthcheck:
+      test: [ "CMD", "pg_isready", "-d", "${POSTGRES_DB:-my-awesome-app}", "-U", "${POSTGRES_USER:-my-awesome-app}" ]
+      timeout: 5s
+      retries: 5
+      start_period: 60s
+    # uncomment if you want to directly access your db for querying...
+    # Change port if necessary, e.g. if you host already exposes other postgres containers
+    # ports:
+    #  - "5432:5432"
+    volumes:
+      - ./postgresql_data:/var/lib/postgresql/data
+    networks:
+      - my_awesome_app_net
+
+  redis:
+    image: redis:7
+    container_name: my-awesome-app-redis
+    restart: unless-stopped
+    # uncomment if you want to directly access your redis container for data visualization...
+    # Change port if necessary, e.g. if you host already exposes other redis containers
+    # ports:
+    #  - "6379:6379"
+    networks:
+      - my_awesome_app_net
+
+volumes:
+  db_data:
+  
+networks:
+  my_awesome_app_net:
+    driver: bridge
