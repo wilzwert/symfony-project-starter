@@ -1,0 +1,7 @@
+# Docker
+docker/dev/postgresql_data/
+
+# OS / IDE
+.DS_Store
+.idea/
+.vscode/
