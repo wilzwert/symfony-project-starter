@@ -13,17 +13,22 @@ class SampleEntity
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, unique: true)]
     private ?string $name = null;
+
+    #[ORM\Column(type: "datetime_immutable")]
+    private \DateTimeImmutable $createdAt;
+
 
     /**
      * @param int|null $id
      * @param string|null $name
      */
-    public function __construct(?int $id, ?string $name)
+    public function __construct(?int $id, ?string $name, ?\DateTimeImmutable $createdAt = null)
     {
         $this->id = $id;
         $this->name = $name;
+        $this->createdAt = $createdAt ?? new \DateTimeImmutable();
     }
 
     public function getId(): ?int
@@ -48,5 +53,10 @@ class SampleEntity
         $this->name = $name;
 
         return $this;
+    }
+
+    public function getCreatedAt(): \DateTimeImmutable
+    {
+        return $this->createdAt;
     }
 }
