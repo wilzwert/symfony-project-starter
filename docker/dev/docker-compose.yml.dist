@@ -1,4 +1,4 @@
-# please use .env.dist to set useful environment vars
+# See .env to set useful environment vars
 
 services:
   app:
@@ -81,7 +81,7 @@ services:
     # uncomment if you want to directly access your db for querying...
     # Change port if necessary, e.g. if you host already exposes another postgres container on the same port
     # ports:
-    #  - "5432:5432"
+    #  - "5433:5432"
     volumes:
       - ./postgresql_data:/var/lib/postgresql/data
     networks:
