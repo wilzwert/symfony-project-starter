@@ -92,7 +92,7 @@ services:
     container_name: "${APP_NAME}-redis"
     restart: unless-stopped
     # uncomment if you want to directly access your redis container for data visualization...
-    # Change port if necessary, e.g. if you host already exposes other redis containers
+    # Change port if necessary, e.g. if you host already exposes another redis container on the same port
     # ports:
     #  - "6379:6379"
     networks:
