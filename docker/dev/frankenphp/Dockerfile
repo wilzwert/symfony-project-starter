@@ -8,8 +8,7 @@ ARG APP_USER=symfony
 
 # Install sudo to allow our entrypoint to set ownership on docker.sock
 # Create a symfony user to avoid working as root
-RUN apt-get update && apt-get install -y sudo \
- && addgroup --gid $GID $APP_USER \
+RUN addgroup --gid $GID $APP_USER \
  && adduser --uid $UID --gid $GID --disabled-password --gecos "" $APP_USER
 
 # Create a docker group and add our symfony user to it
@@ -22,7 +21,7 @@ RUN groupadd -g ${DOCKER_GID} docker && usermod -aG docker $APP_USER
 # otherwise caddy will e.g. try to create a certificate in /data/caddy which is not writable as non-root by default
 RUN mkdir -p /data/caddy \
     && chown -R $APP_USER:$APP_USER /data/caddy
- 
+
 # Install PHP extensions for Symfony + PostgreSQL + Redis
 RUN install-php-extensions \
     pdo_pgsql \
@@ -30,21 +29,28 @@ RUN install-php-extensions \
     opcache \
     intl \
     zip
-	
+
 # Install Xdebug
 RUN install-php-extensions xdebug
 
 # Configure PHP
 COPY docker/dev/php.ini /usr/local/etc/php/php.ini
 
+
 WORKDIR /app
+
+RUN chown $APP_USER:$APP_USER /app
+
+USER $APP_USER
+
 
 # Install Composer
 COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 # Install dependencies
 COPY symfony/composer.json symfony/composer.lock ./
-RUN composer install --no-scripts --no-interaction --no-progress
+
+RUN composer install --no-scripts --no-interaction --no-progress --optimize-autoloader
 
 # Copy app code
 COPY symfony/ ./
@@ -53,12 +59,14 @@ COPY symfony/ ./
 CMD php bin/console cache:clear --no-warmup && \
     exec frankenphp run --config /etc/caddy/Caddyfile --adapter caddyfile
 
+
+USER root
 # Change app ownership
 RUN chown -R $APP_USER:$APP_USER /app
 
 # Clear + warmup cache dev
-RUN php bin/console cache:clear --env=dev --no-warmup \
- && php bin/console cache:warmup --env=dev
+RUN php -d display_errors=1 -d error_reporting=E_ALL bin/console cache:clear --env=dev --no-warmup -vvv
+RUN php bin/console cache:warmup --env=dev
 
 
 # Copy Caddyfile to container
