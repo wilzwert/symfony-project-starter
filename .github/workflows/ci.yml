@@ -28,15 +28,22 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
+      - name: Check current directory and list files
+        run: |
+          echo "Current directory:"
+          pwd
+          echo "Files here:"
+          ls -la docker/dev
+
       - name: Build Docker images
-        run: docker compose -f docker/dev/docker-compose.yml build --no-cache
+        run: docker compose -f ./docker/dev/docker-compose.yml build --no-cache
 
       - name: Start services
-        run: docker compose -f docker/dev/docker-compose.yml up -d
+        run: docker compose -f ./docker/dev/docker-compose.yml up -d
 
       - name: Execude tests inside container
         run: docker compose exec -T php vendor/bin/phpunit --coverage-text --min-coverage=80
 
       - name: Stop services
         if: always()
-        run: docker compose -f docker/dev/docker-compose.yml down -v
+        run: docker compose -f ./docker/dev/docker-compose.yml down -v
