@@ -25,6 +25,16 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Prepare docker environment
+        working-directory: docker/dev
+        run: |
+          cp .env.dist .env
+
+      - name: Prepare symfony environment
+        working-directory: symfony
+        run: |
+          cp .env.test.dist .env.test
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
