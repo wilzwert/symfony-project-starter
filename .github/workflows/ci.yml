@@ -1,0 +1,48 @@
+name: CI
+concurrency:
+  group: ${{ github.ref }}.ci
+  cancel-in-progress: true
+on:
+  # CI should be able to run manually
+  # which will be interpreted as a push on main
+  workflow_dispatch:
+  # CI should run on pull requests and push on main branch
+  # some steps are executed only on pushes on main branch
+  pull_request:
+    branches: [ "master" ]
+    types: [opened, synchronize, reopened]
+  push:
+    branches:
+      - master
+jobs:
+  build-test:
+    name: Run backend tests and quality analysis
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./symfony
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Install dependencies
+        uses: php-actions/composer@v6
+        env:
+          COMPOSER: "composer.json"
+          ACTION_TOKEN: "true"
+        with:
+          php_version: "8.4"
+          php_extensions: pdo_pgsql redis opcache intl zip xdebug
+
+
+#      - name: Run PHPUnit tests
+#        uses: php-actions/phpunit@v3
+#        with:
+#
+#          bootstrap: vendor/autoload.php
+#          configuration: phpunit.dist.xml
+#          php_version: "8.4"
+
