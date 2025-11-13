@@ -52,7 +52,7 @@ jobs:
         run: docker compose -f ./docker/dev/docker-compose.yml up -d
 
       - name: Execude tests inside container
-        run: docker compose exec -T php vendor/bin/phpunit --coverage-text --min-coverage=80
+        run: docker compose exec -T  my-awesome-app-web vendor/bin/phpunit --coverage-text --min-coverage=80
 
       - name: Stop services
         if: always()
