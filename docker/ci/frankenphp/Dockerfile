@@ -50,6 +50,9 @@ USER root
 # Change app ownership
 RUN chown -R $APP_USER:$APP_USER /app
 
+# Copy Caddyfile to container
+COPY docker/dev/frankenphp/Caddyfile /etc/caddy/Caddyfile
+
 # Copy entrypoint script
 COPY docker/ci/frankenphp/entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh

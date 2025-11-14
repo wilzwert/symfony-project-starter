@@ -21,12 +21,15 @@ jobs:
     name: Run backend tests and publish coverage
     runs-on: ubuntu-latest
 
+    defaults:
+      run:
+        working-directory: docker/ci
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
       - name: Prepare docker environment
-        working-directory: docker/ci
         run: |
           cp .env.dist .env
 
@@ -46,16 +49,19 @@ jobs:
           ls -la docker/ci
 
       - name: Build Docker images
-        run: docker compose -f ./docker/ci/docker-compose.yml build
+        run: docker compose build
 
       - name: Start services
-        run: docker compose -f ./docker/ci/docker-compose.yml up -d
+        run: docker compose  up -d
+
+      - name: Install dependencies
+        run: docker compose exec -T composer install --no-interaction --no-scripts
 
       - name: Execute tests inside container
-        run: docker compose -f ./docker/ci/docker-compose.yml exec -T app composer test
+        run: docker compose exec -T app composer test
 
       - name: Run PHPStan
-        run: docker compose -f ./docker/ci/docker-compose.yml exec -T app vendor/bin/phpstan
+        run: docker compose exec -T app vendor/bin/phpstan
         # this step could fail because of phpstan warnings/errors, but it's not considered a fatal error
         continue-on-error: true
 
@@ -63,7 +69,7 @@ jobs:
         uses: actions/upload-artifact@v5
         with:
           name: symfony-core-coverage
-          path: ./symfony/coverage
+          path: ../../symfony/coverage
           retention-days: 7
 
       - name: Sonar Scan
