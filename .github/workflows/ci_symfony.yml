@@ -55,7 +55,7 @@ jobs:
         run: docker compose  up -d
 
       - name: Install dependencies
-        run: docker compose exec -T composer install --no-interaction --no-scripts
+        run: docker compose exec -T app composer install --no-interaction --no-scripts
 
       - name: Execute tests inside container
         run: docker compose exec -T app composer test
