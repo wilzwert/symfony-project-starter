@@ -54,6 +54,13 @@ jobs:
       - name: Execute tests inside container
         run: docker compose -f ./docker/dev/docker-compose.yml exec -T app composer test
 
+      - name: Upload symfony coverage report artifact
+        uses: actions/upload-artifact@v5
+        with:
+          name: symfony-core-coverage
+          path: ./symfony/coverage
+          retention-days: 7
+
       - name: Sonar Scan
         uses: SonarSource/sonarqube-scan-action@v6
         with:
