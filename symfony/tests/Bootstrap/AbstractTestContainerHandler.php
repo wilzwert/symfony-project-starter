@@ -22,8 +22,6 @@ abstract class AbstractTestContainerHandler implements TestContainerHandler
         }
 
         return 'host.docker.internal';
-
-        return isset($_ENV['DOCKER_HOST_OS_FAMILY']) && 'linux' != $_ENV['DOCKER_HOST_OS_FAMILY'] ? 'host.docker.internal' : $this->container->getHost();
     }
 
     /**

@@ -16,7 +16,7 @@ interface CacheManager
      *
      * @param string $key the cache key
      * @param callable $callback to load the actual data if cache is not available
-     * @return array the actual data
+     * @return array<Object> the actual data
      * @throws InvalidArgumentException
      */
     public function get(string $key, callable $callback): array;
