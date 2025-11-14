@@ -81,4 +81,4 @@ jobs:
 
       - name: Stop services
         if: always()
-        run: docker compose -f ./docker/ci/docker-compose.yml down -v
+        run: docker compose down -v
