@@ -8,4 +8,5 @@ if [ -S /var/run/docker.sock ]; then
     chown ${UID:-1000}:${DOCKER_GID:-999} /var/run/docker.sock || true
 fi
 
-# exec frankenphp run --config /etc/caddy/Caddyfile --adapter caddyfile
+# keep container alive
+exec frankenphp run --config /etc/caddy/Caddyfile --adapter caddyfile
