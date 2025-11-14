@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!-- Please copy this file to phpunit.xml  -->
+<!-- Please copy this file to phpunit.xml -->
 
 <!-- https://phpunit.readthedocs.io/en/latest/configuration.html -->
 <phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -48,9 +48,10 @@
     <coverage includeUncoveredFiles="true"
               pathCoverage="true"
               ignoreDeprecatedCodeUnits="true"
-              disableCodeCoverageIgnore="true">
+              disableCodeCoverageIgnore="false">
         <report>
             <html outputDirectory="coverage" lowUpperBound="50" highLowerBound="90"/>
+            <clover outputFile="coverage/clover.xml"/>
         </report>
     </coverage>
 

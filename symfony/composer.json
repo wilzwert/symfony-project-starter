@@ -27,9 +27,10 @@
     "require-dev": {
         "dama/doctrine-test-bundle": "^8.4",
         "doctrine/doctrine-fixtures-bundle": "^4.3",
+        "esi/phpunit-coverage-check": "^3.0",
         "friendsofphp/php-cs-fixer": "^3.89.2",
         "phpstan/phpstan": "^2.1.32",
-        "phpunit/phpunit": "^12.4.2",
+        "phpunit/phpunit": "^12.4.3",
         "symfony/http-client": "^7.3.6",
         "testcontainers/testcontainers": "^1.0.3"
     },
@@ -72,6 +73,10 @@
         ],
         "post-update-cmd": [
             "@auto-scripts"
+        ],
+        "test": [
+            "XDEBUG_MODE=coverage vendor/bin/phpunit",
+            "vendor/bin/coverage-check coverage/clover.xml 80"
         ]
     },
     "conflict": {
