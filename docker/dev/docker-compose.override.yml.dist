@@ -1,0 +1,17 @@
+# Override example for local development or testing purposes
+# Copy this file to docker-compose.override.yml then edit config
+
+services:
+  db:
+    ports:
+      # Expose PostgreSQL for local tools
+      - "5433:5432"
+
+  redis:
+    ports:
+      # Expose Redis for visualization/debug
+      - "6379:6379"
+
+  app:
+    ports:
+      - "8080:80" # FrankenPHP/Caddy

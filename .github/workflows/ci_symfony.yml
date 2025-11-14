@@ -1,0 +1,73 @@
+name: CI
+
+concurrency:
+  group: ${{ github.ref }}.ci
+  cancel-in-progress: true
+on:
+  # CI should be able to run manually
+  # which will be interpreted as a push on main
+  workflow_dispatch:
+  # CI should run on pull requests and push on main branch
+  # some steps are executed only on pushes on main branch
+  pull_request:
+    branches: [ "master" ]
+    types: [opened, synchronize, reopened]
+  push:
+    branches:
+      - master
+
+jobs:
+  backend-tests:
+    name: Run backend tests and publish coverage
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Prepare docker environment
+        working-directory: docker/dev
+        run: |
+          cp .env.dist .env
+
+      - name: Prepare symfony environment
+        working-directory: symfony
+        run: |
+          cp .env.test.dist .env.test
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Check current directory and list files
+        run: |
+          echo "Current directory:"
+          pwd
+          echo "Files here:"
+          ls -la docker/dev
+
+      - name: Build Docker images
+        run: docker compose -f ./docker/dev/docker-compose.yml build --no-cache
+
+      - name: Start services
+        run: docker compose -f ./docker/dev/docker-compose.yml up -d
+
+      - name: Execute tests inside container
+        run: docker compose -f ./docker/dev/docker-compose.yml exec -T app composer test
+
+      - name: Upload symfony coverage report artifact
+        uses: actions/upload-artifact@v5
+        with:
+          name: symfony-core-coverage
+          path: ./symfony/coverage
+          retention-days: 7
+
+      - name: Sonar Scan
+        uses: SonarSource/sonarqube-scan-action@v6
+        with:
+          projectBaseDir: symfony
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_SYMFONY }}
+
+      - name: Stop services
+        if: always()
+        run: docker compose -f ./docker/dev/docker-compose.yml down -v
