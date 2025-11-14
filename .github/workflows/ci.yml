@@ -51,8 +51,15 @@ jobs:
       - name: Start services
         run: docker compose -f ./docker/dev/docker-compose.yml up -d
 
-      - name: Execude tests inside container
+      - name: Execute tests inside container
         run: docker compose -f ./docker/dev/docker-compose.yml exec -T app composer test
+
+      - name: Sonar Scan
+        uses: SonarSource/sonarqube-scan-action@v6
+        with:
+          projectBaseDir: symfony
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_SYMFONY }}
 
       - name: Stop services
         if: always()

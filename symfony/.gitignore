@@ -24,3 +24,8 @@ phpstan.neon
 /.phpunit.cache/
 /coverage
 ###< phpunit/phpunit ###
+
+
+###> sonar ###
+./.scannerwork
+###< sonar ###
