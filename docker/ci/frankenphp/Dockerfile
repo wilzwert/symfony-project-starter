@@ -13,6 +13,8 @@ RUN addgroup --gid $GID $APP_USER \
 # ---- build stage: install dependencies (cached layer) ----
 FROM base AS deps
 
+WORKDIR /app
+
 # Install PHP extensions for Symfony + PostgreSQL + Redis
 RUN install-php-extensions \
     pdo_pgsql \
