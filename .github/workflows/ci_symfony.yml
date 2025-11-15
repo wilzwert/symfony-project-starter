@@ -32,10 +32,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Prepare docker environment
-        run: |
-          cp .env.dist .env
-
       - name: Prepare symfony environment
         working-directory: symfony
         run: |
