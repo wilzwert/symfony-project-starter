@@ -36,7 +36,7 @@ COPY docker/ci/php.ini /usr/local/etc/php/php.ini
 COPY symfony/composer.json symfony/composer.lock /app/
 
 RUN composer install --no-interaction --prefer-dist --no-progress --no-scripts --ignore-platform-reqs \
-    && rm -rf /root/.composer/cache/*
+    && rm -rf /root/.cache/composer/*
 
 
 # ---- test/runtime stage: copy full app and vendor from deps ----

@@ -60,13 +60,6 @@ jobs:
           restore-keys: |
             buildx-${{ runner.os }}-
 
-      - name: Cache Composer (host cache - helps local composer if used)
-        uses: actions/cache@v4
-        with:
-          path: ~/.cache/composer
-          key: composer-${{ runner.os }}-${{ hashFiles('symfony/composer.lock') }}
-          restore-keys: composer-${{ runner.os }}-
-
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v3
         with:
@@ -142,7 +135,7 @@ jobs:
           echo "Files here:"
           ls -la
           echo "Files in symfony : "
-          ls -la ../../symfony
+          ls -la ../../symfony/.scannerwork
         continue-on-error: true
 
       - name: SonarQube Quality Gate Check
