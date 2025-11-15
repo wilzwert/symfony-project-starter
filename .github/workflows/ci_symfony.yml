@@ -29,10 +29,6 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Prepare symfony environment
-        run: |
-          cp .env.test.dist .env.test
-
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
@@ -77,6 +73,9 @@ jobs:
           name: vendor
           path: symfony/vendor
 
+      - name: Fix executable permissions
+        run: chmod +x vendor/bin/phpunit
+
       - name: Check current directory and list files
         run: |
           echo "Current directory:"
@@ -119,6 +118,9 @@ jobs:
         with:
           name: vendor
           path: symfony/vendor
+
+      - name: Fix executable permissions
+        run: chmod +x vendor/bin/phpstan
 
       - name: Run PHPStan
         run: vendor/bin/phpstan > phpstan-report.txt || true
