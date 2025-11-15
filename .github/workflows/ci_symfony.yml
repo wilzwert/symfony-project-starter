@@ -157,12 +157,28 @@ jobs:
           name: symfony-coverage
           path: symfony/coverage
 
-      - name: Sonar Scan
+      # Run SonarQube analysis on push or manual run
+      - name: Sonar scan on push or manual run
+        if: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' }}
         uses: SonarSource/sonarqube-scan-action@v6
         with:
           projectBaseDir: symfony
           args: >
             -Dsonar.branch.name=${{ github.ref_name }}
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_SYMFONY }}
+
+      # Run SonarQube analysis on pull request
+      - name: Sonar scan on pull request
+        if: ${{ github.event_name == 'pull_request' }}
+        uses: SonarSource/sonarqube-scan-action@v6
+        with:
+          projectBaseDir: symfony
+          args: >
+            -Dsonar.branch.name=${{ github.ref_name }}
+            -Dsonar.pullrequest.key=${{ github.event.pull_request.number }} \
+            -Dsonar.pullrequest.branch=${{ github.head_ref }} \
+            -Dsonar.pullrequest.base=${{ github.base_ref }} \
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_SYMFONY }}
 
