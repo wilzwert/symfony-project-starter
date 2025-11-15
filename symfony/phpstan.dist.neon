@@ -9,7 +9,6 @@ parameters:
     excludePaths:
         analyse:
             - tests/bootstrap.php
-    parameters:
-    	errorFormat: table
+    errorFormat: table
 includes:
     - vendor/phpstan/phpstan-doctrine/extension.neon
