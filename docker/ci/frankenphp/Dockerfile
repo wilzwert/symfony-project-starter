@@ -40,6 +40,8 @@ RUN composer install --no-interaction --prefer-dist --no-progress --no-scripts -
 # ---- test/runtime stage: copy full app and vendor from deps ----
 FROM base AS runner
 
+WORKDIR /app
+
 # copy composer from deps
 COPY --from=deps /usr/bin/composer /usr/bin/composer
 
@@ -50,8 +52,6 @@ COPY symfony /app
 COPY --from=deps /app/vendor /app/vendor
 COPY --from=deps /app/composer.lock /app/composer.lock
 COPY --from=deps /app/composer.json /app/composer.json
-
-WORKDIR /app
 
 RUN chown $APP_USER:$APP_USER /app
 
