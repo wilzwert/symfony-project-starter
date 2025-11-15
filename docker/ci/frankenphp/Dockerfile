@@ -1,9 +1,8 @@
-FROM dunglas/frankenphp:php8.4
+FROM dunglas/frankenphp:php8.4 AS base
 
 # user/group
 ARG UID=1000
 ARG GID=1000
-# ARG DOCKER_GID=1001
 ARG APP_USER=symfony
 
 # Install sudo to allow our entrypoint to set ownership on docker.sock
@@ -11,16 +10,10 @@ ARG APP_USER=symfony
 RUN addgroup --gid $GID $APP_USER \
  && adduser --uid $UID --gid $GID --disabled-password --gecos "" $APP_USER
 
-# Create a docker group and add our symfony user to it
-# This is useful in systems where you are able to pass the right docker group id
-# as it will allow testcontainers to use docker.sock
-# otherwise it has no effect
-# RUN groupadd -g ${DOCKER_GID} docker && usermod -aG docker $APP_USER
+WORKDIR /app
 
-# allows startup even if running as non-root user
-# otherwise caddy will e.g. try to create a certificate in /data/caddy which is not writable as non-root by default
-# RUN mkdir -p /data/caddy \
-#    && chown -R $APP_USER:$APP_USER /data/caddy
+# ---- build stage: install dependencies (cached layer) ----
+FROM base as deps
 
 # Install PHP extensions for Symfony + PostgreSQL + Redis
 RUN install-php-extensions \
@@ -36,6 +29,23 @@ RUN install-php-extensions xdebug
 # Configure PHP
 COPY docker/ci/php.ini /usr/local/etc/php/php.ini
 
+# copy only files needed for composer install to benefit from layer cache
+COPY symfony/composer.json symfony/composer.lock /app/
+
+RUN composer install --no-interaction --prefer-dist --no-progress --no-scripts --ignore-platform-reqs \
+    && rm -rf /root/.composer/cache/*
+
+
+# ---- test/runtime stage: copy full app and vendor from deps ----
+FROM base AS runner
+
+# copy full project
+COPY symfony /app
+
+# copy vendor from deps
+COPY --from=deps /app/vendor /app/vendor
+COPY --from=deps /app/composer.lock /app/composer.lock
+COPY --from=deps /app/composer.json /app/composer.json
 
 WORKDIR /app
 
@@ -43,20 +53,4 @@ RUN chown $APP_USER:$APP_USER /app
 
 USER $APP_USER
 
-# Install Composer
-COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
-
-USER root
-# Change app ownership
-RUN chown -R $APP_USER:$APP_USER /app
-
-# Copy Caddyfile to container
-COPY docker/dev/frankenphp/Caddyfile /etc/caddy/Caddyfile
-
-# Copy entrypoint script
-COPY docker/ci/frankenphp/entrypoint.sh /usr/local/bin/entrypoint.sh
-RUN chmod +x /usr/local/bin/entrypoint.sh
-
-USER $APP_USER
-
-ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
+CMD ["sleep", "infinity"]
