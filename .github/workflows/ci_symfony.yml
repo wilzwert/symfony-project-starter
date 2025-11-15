@@ -85,7 +85,7 @@ jobs:
         with:
           context: ${{ github.workspace }}
           file: ${{ github.workspace }}/docker/ci/frankenphp/Dockerfile
-          tags: ${{ env.IMAGE_NAME }}:${{ steps.set-tag.outputs.image-tag }}
+          tags: $IMAGE_NAME:${{ steps.set-tag.outputs.image-tag }}
           push: true
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache,mode=max
@@ -95,7 +95,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: build
     env:
-      CI_IMAGE: ${{ vars.IMAGE_NAME }}:${{ needs.build.outputs.image-tag }}
+      CI_IMAGE: $IMAGE_NAME:${{ needs.build.outputs.image-tag }}
 
     defaults:
       run:
