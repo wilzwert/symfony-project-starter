@@ -78,17 +78,21 @@ jobs:
       - name: Fix executable permissions
         run: chmod +x vendor/bin/phpunit
 
-      - name: Check current directory and list files
-        run: |
-          echo "Current directory:"
-          pwd
-          echo "Files here:"
-          ls -la
-
       - name: Run tests with coverage
         id: run-tests
         run: composer test
+        # this step may fail if minimum coverage is not reached, but we need do continue anyway
+        # because we need to update coverage report and run sonar scan later
         continue-on-error: true
+
+      # if coverage doesn't exist, something bad happened, and we can't go further
+      - name: Verify coverage report existence and stop if missing
+        run: |
+          if [ ! -f "./coverage/clover.xml" ]; then          
+           echo "Error: File 'symfony/coverage/clover.xml' not found. Job failed."
+           exit 1
+          fi
+        shell: bash
 
       - name: Upload symfony coverage report artifact
         uses: actions/upload-artifact@v5
