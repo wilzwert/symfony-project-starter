@@ -9,7 +9,6 @@ services:
     restart: unless-stopped
     user: root
     volumes:
-      - ../../symfony:/app
       # Mounting docker socket to allow TestContainers to create containers
       - /var/run/docker.sock:/var/run/docker.sock
     environment:
