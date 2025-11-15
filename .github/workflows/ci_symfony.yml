@@ -142,7 +142,7 @@ jobs:
           echo "Files here:"
           ls -la
           echo "Files in symfony : "
-          ls -la symfony
+          ls -la ../../symfony
         continue-on-error: true
 
       - name: SonarQube Quality Gate Check
