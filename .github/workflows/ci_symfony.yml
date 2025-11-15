@@ -136,17 +136,29 @@ jobs:
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_SYMFONY }}
 
+      - name: Check current directory and list files
+        run: |
+          echo "Current directory:"
+          pwd
+          echo "Files here:"
+          ls -la
+          echo "Files in symfony : "
+          ls -la symfony
+        continue-on-error: true
+
       - name: SonarQube Quality Gate Check
         id: quality-gate
         uses: sonarsource/sonarqube-quality-gate-action@master
         with:
-          scanMetadataReportFile: ./symfony/.scannerwork/sonar-report.json
+          scanMetadataReportFile: symfony/.scannerwork/sonar-report.json
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_SYMFONY }}
         continue-on-error: true
 
       - name: Stop services
         if: always()
+        env:
+          CI_IMAGE: ${{ env.IMAGE_NAME }}:${{ needs.build.outputs.image-tag }}
         run: docker compose down -v
 
       # fail job if coverage or quality requirements not met
