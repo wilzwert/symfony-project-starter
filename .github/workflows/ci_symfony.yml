@@ -79,12 +79,11 @@ jobs:
           TAG=ci-${GITHUB_SHA}
           echo "image-tag=$TAG" >> $GITHUB_OUTPUT
 
-
       - name: Build with buildx
         uses: docker/build-push-action@v6
         with:
-          context: ../..
-          file: docker/ci/frankenphp/Dockerfile
+          context: ${{ github.workspace }}
+          file: ${{ github.workspace }}/docker/ci/frankenphp/Dockerfile
           tags: ${{ env.IMAGE_NAME }}:${{ steps.set-tag.outputs.image-tag }},${{ env.IMAGE_NAME }}:ci-latest
           push: true
           cache-from: type=local,src=/tmp/.buildx-cache

@@ -10,10 +10,10 @@ ARG APP_USER=symfony
 RUN addgroup --gid $GID $APP_USER \
  && adduser --uid $UID --gid $GID --disabled-password --gecos "" $APP_USER
 
-WORKDIR /app
-
 # ---- build stage: install dependencies (cached layer) ----
-FROM base as deps
+FROM base AS deps
+
+RUN echo "---- ACTUAL DOCKERFILE USED ----" && pwd && ls -R /
 
 # Install PHP extensions for Symfony + PostgreSQL + Redis
 RUN install-php-extensions \
@@ -25,6 +25,9 @@ RUN install-php-extensions \
 
 # Install Xdebug
 RUN install-php-extensions xdebug
+
+# Install Composer
+COPY --from=composer:2.9.1 /usr/bin/composer /usr/bin/composer
 
 # Configure PHP
 COPY docker/ci/php.ini /usr/local/etc/php/php.ini

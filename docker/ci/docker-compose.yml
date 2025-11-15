@@ -6,7 +6,6 @@ services:
     image: app-ci:latest
     extra_hosts:
       - "host.docker.internal=host-gateway"
-    container_name: "${APP_NAME}-ci"
     restart: unless-stopped
     user: root
     volumes:
