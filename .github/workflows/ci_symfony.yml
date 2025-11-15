@@ -16,31 +16,65 @@ on:
     branches:
       - master
 
-env:
-  IMAGE_NAME: ghcr.io/${{ github.repository_owner }}/${{ github.event.repository.name }}
-
 jobs:
-  build:
-    name: Build CI image using caches
+  setup:
+    name: Setup project
     runs-on: ubuntu-latest
-    outputs:
-      image-tag: ${{ steps.set-tag.outputs.image-tag }}
-    permissions:
-      contents: read
-      packages: write
 
     defaults:
       run:
-        working-directory: docker/ci
+        working-directory: symfony
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
       - name: Prepare symfony environment
-        working-directory: symfony
         run: |
           cp .env.test.dist .env.test
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.4"
+          extensions: intl, pdo_pgsql, redis, zip
+
+      - name: Install Composer dependencies
+        run: composer install --no-interaction --prefer-dist
+
+      - name: Upload vendor
+        uses: actions/upload-artifact@v4
+        with:
+          name: vendor
+          path: vendor
+
+  test:
+    name: Tests, sonar analysis + quality gate
+    runs-on: ubuntu-latest
+    needs: setup
+
+    defaults:
+      run:
+        working-directory: symfony
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Prepare symfony environment
+        run: |
+          cp .env.test.dist .env.test
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.4"
+          extensions: intl, pdo_pgsql, redis, zip
+          coverage: xdebug
+
+      - name: Download vendor
+        uses: actions/download-artifact@v6
+        with:
+          name: vendor
 
       - name: Check current directory and list files
         run: |
@@ -49,76 +83,9 @@ jobs:
           echo "Files here:"
           ls -la
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Cache Buildx layers
-        uses: actions/cache@v4
-        with:
-          path: /tmp/.buildx-cache
-          key: buildx-${{ runner.os }}-${{ github.sha }}
-          restore-keys: |
-            buildx-${{ runner.os }}-
-
-      - name: Login to GitHub Container Registry
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Set image tag
-        id: set-tag
-        run: |
-          TAG=ci-${GITHUB_SHA}
-          echo "image-tag=$TAG" >> $GITHUB_OUTPUT
-
-      - name: Build with buildx
-        uses: docker/build-push-action@v6
-        with:
-          context: ${{ github.workspace }}
-          file: ${{ github.workspace }}/docker/ci/frankenphp/Dockerfile
-          tags: ${{ env.IMAGE_NAME }}:${{ steps.set-tag.outputs.image-tag }}
-          push: true
-          cache-from: type=local,src=/tmp/.buildx-cache
-          cache-to: type=local,dest=/tmp/.buildx-cache,mode=max
-          build-args:
-            BUILD_ID=$(date +%s)
-
-  test:
-    name: Tests
-    runs-on: ubuntu-latest
-    needs: build
-
-    defaults:
-      run:
-        working-directory: docker/ci
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Login to GHCR
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Pull CI image
-        run: docker pull ${{ env.IMAGE_NAME }}:${{ needs.build.outputs.image-tag }}
-
-      - name: Start services
-        run: |
-          CI_IMAGE=${{ env.IMAGE_NAME }}:${{ needs.build.outputs.image-tag }} docker compose  up -d
-
-      - name: Debug image content
-        run: |
-          CI_IMAGE=${{ env.IMAGE_NAME }}:${{ needs.build.outputs.image-tag }} docker compose exec app ls -la ./
-
       - name: Run tests with coverage
         id: run-tests
-        run: |
-          CI_IMAGE=${{ env.IMAGE_NAME }}:${{ needs.build.outputs.image-tag }} docker compose exec -T app composer test
+        run: composer test
         continue-on-error: true
 
       - name: Upload symfony coverage report artifact
@@ -144,22 +111,17 @@ jobs:
           echo "Files here:"
           ls -la
           echo "Files in symfony : "
-          ls -la ../../symfony/.scannerwork
+          ls -la .scannerwork
         continue-on-error: true
 
       - name: SonarQube Quality Gate Check
         id: quality-gate
         uses: sonarsource/sonarqube-quality-gate-action@master
         with:
-          scanMetadataReportFile: ${{ github.workspace }}/symfony/.scannerwork/report-task.txt
+          scanMetadataReportFile: .scannerwork/report-task.txt
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_SYMFONY }}
         continue-on-error: true
-
-      - name: Stop services
-        if: always()
-        run: |
-          CI_IMAGE=${{ env.IMAGE_NAME }}:${{ needs.build.outputs.image-tag }} docker compose down -v
 
       # fail job if coverage or quality requirements not met
       # this allows to explicitly specify what went wrong, as we used continue-on-error previously
@@ -175,8 +137,9 @@ jobs:
           fi
           exit 1
 
-  phpstan:
-    name: PHPStan
+  code:
+    name: Code analysis
+    needs: setup
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -192,8 +155,10 @@ jobs:
           php-version: '8.4'
           extensions: pdo_pgsql, redis, intl, zip
 
-      - name: Install Composer dependencies
-        run: composer install --no-progress --no-suggest --prefer-dist
+      - name: Download vendor
+        uses: actions/download-artifact@v6
+        with:
+          name: vendor
 
       - name: Run PHPStan
         run: vendor/bin/phpstan > phpstan-report.txt || true

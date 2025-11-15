@@ -20,8 +20,8 @@ abstract class AbstractTestContainerHandler implements TestContainerHandler
         if (!$this->container) {
             throw new \Exception('Host cannot be determined before the container is started.');
         }
-
-        return 'host.docker.internal';
+        // return $this->container->getHost();
+        return getenv('TESTCONTAINERS_HOST') ?: 'host.docker.internal';
     }
 
     /**
