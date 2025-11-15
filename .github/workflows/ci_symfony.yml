@@ -114,7 +114,7 @@ jobs:
 
       - name: Start services
         run: |
-          CI_IMAGE: ${{ env.IMAGE_NAME }}:${{ needs.build.outputs.image-tag }} docker compose  up -d
+          CI_IMAGE=${{ env.IMAGE_NAME }}:${{ needs.build.outputs.image-tag }} docker compose  up -d
 
       - name: Run tests with coverage
         id: run-tests
@@ -157,7 +157,7 @@ jobs:
       - name: Stop services
         if: always()
         run: |
-          CI_IMAGE: ${{ env.IMAGE_NAME }}:${{ needs.build.outputs.image-tag }} docker compose down -v
+          CI_IMAGE=${{ env.IMAGE_NAME }}:${{ needs.build.outputs.image-tag }} docker compose down -v
 
       # fail job if coverage or quality requirements not met
       # this allows to explicitly specify what went wrong, as we used continue-on-error previously
