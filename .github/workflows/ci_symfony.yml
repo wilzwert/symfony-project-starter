@@ -108,18 +108,14 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Pull CI image
-        run: docker pull ${{ env.IMAGE_NAME }}:ci-${{ needs.build-and-push.outputs.image-tag }}
+        run: docker pull ${{ env.IMAGE_NAME }}:ci-${{ needs.build.outputs.image-tag }}
 
       - name: Start services
         run: docker compose  up -d
 
-      - name: Execute tests inside container
+      - name: Run tests with coverage
+        id: run-tests
         run: docker compose exec -T app composer test
-
-      - name: Run PHPStan
-        run: docker compose exec -T app vendor/bin/phpstan
-        # this step could fail because of phpstan warnings/errors, but it's not considered a fatal error
-        # TODO : we should catch its output and at least make it available as advice
         continue-on-error: true
 
       - name: Upload symfony coverage report artifact
@@ -136,6 +132,57 @@ jobs:
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_SYMFONY }}
 
+      - name: SonarQube Quality Gate Check
+        id: quality-gate
+        uses: sonarsource/sonarqube-quality-gate-action@master
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_SYMFONY }}
+        continue-on-error: true
+
       - name: Stop services
         if: always()
         run: docker compose down -v
+
+      # fail job if coverage or quality requirements not met
+      # this allows to explicitly specify what went wrong, as we used continue-on-error previously
+      - name: Check requirements
+        if: ${{ steps.run-tests.outcome == 'failure' || steps.quality-gate.outcome == 'failure' }}
+        run: |
+          echo "Job failed :"
+          if [ "${{ steps.run-tests.outcome }}" == "failure" ]; then
+            echo "Coverage checks have not been met. See step 'Run tests with coverage' output, and coverage report"
+          fi
+          if [ "${{ steps.quality-gate.outcome }}" == "failure" ]; then
+            echo "Code quality gate check failed. See step 'SonarQube Quality Gate Check'"
+          fi
+          exit 1
+
+  phpstan:
+    name: PHPStan
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: symfony
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: pdo_pgsql, redis, intl, zip
+
+      - name: Install Composer dependencies
+        run: composer install --no-progress --no-suggest --prefer-dist
+
+      - name: Run PHPStan
+        run: docker compose exec -T app vendor/bin/phpstan
+
+      - name: Upload PHPStan report (optional)
+        if: always()
+        uses: actions/upload-artifact@v5
+        with:
+          name: phpstan-report
+          path: phpstan-report.txt
