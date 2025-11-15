@@ -142,7 +142,7 @@ jobs:
         id: quality-gate
         uses: sonarsource/sonarqube-quality-gate-action@master
         with:
-          scanMetadataReportFile: ${{ github.workspace }}/symfony/.scannerwork/sonar-report.json
+          scanMetadataReportFile: ${{ github.workspace }}/symfony/.scannerwork/report-task.txt
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_SYMFONY }}
         continue-on-error: true
