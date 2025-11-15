@@ -76,7 +76,7 @@ jobs:
           path: symfony/vendor
 
       - name: Fix executable permissions
-        run: chmod +x vendor/bin/phpunit
+        run: chmod +x vendor/bin/phpunit vendor/bin/coverage-check
 
       - name: Run tests with coverage
         id: run-tests
