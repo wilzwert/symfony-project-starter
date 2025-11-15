@@ -85,7 +85,7 @@ jobs:
         with:
           context: ${{ github.workspace }}
           file: ${{ github.workspace }}/docker/ci/frankenphp/Dockerfile
-          tags: $IMAGE_NAME:${{ steps.set-tag.outputs.image-tag }}
+          tags: ${{ env.IMAGE_NAME }}:${{ steps.set-tag.outputs.image-tag }}
           push: true
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache,mode=max
@@ -94,8 +94,6 @@ jobs:
     name: Tests
     runs-on: ubuntu-latest
     needs: build
-    env:
-      CI_IMAGE: $IMAGE_NAME:${{ needs.build.outputs.image-tag }}
 
     defaults:
       run:
@@ -112,10 +110,12 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Pull CI image
-        run: docker pull ${{ env.CI_IMAGE }}
+        run: docker pull ${{ env.IMAGE_NAME }}:${{ needs.build.outputs.image-tag }}
 
       - name: Start services
         run: docker compose  up -d
+        env:
+          CI_IMAGE: ${{ env.IMAGE_NAME }}:${{ needs.build.outputs.image-tag }}
 
       - name: Run tests with coverage
         id: run-tests
