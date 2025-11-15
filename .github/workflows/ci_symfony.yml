@@ -110,7 +110,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Pull CI image
-        run: docker pull ${{ env.IMAGE_NAME }}:ci-${{ needs.build.outputs.image-tag }}
+        run: docker pull ${{ env.IMAGE_NAME }}:${{ steps.set-tag.outputs.image-tag }}
 
       - name: Start services
         run: docker compose  up -d
