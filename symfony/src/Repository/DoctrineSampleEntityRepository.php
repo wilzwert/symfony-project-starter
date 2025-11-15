@@ -9,6 +9,9 @@ use Doctrine\Persistence\ManagerRegistry;
 
 /**
  * @extends ServiceEntityRepository<SampleEntity>
+ * @method SampleEntity|null find(int $id)
+ *
+ *
  */
 class DoctrineSampleEntityRepository extends ServiceEntityRepository implements SampleEntityRepository
 {
@@ -19,7 +22,7 @@ class DoctrineSampleEntityRepository extends ServiceEntityRepository implements 
 
     public function findById(int $id): ?SampleEntity
     {
-        return parent::findOneById($id);
+        return parent::find($id);
     }
 
 

@@ -55,11 +55,6 @@ RUN composer install --no-scripts --no-interaction --no-progress --optimize-auto
 # Copy app code
 COPY symfony/ ./
 
-# Use FrankenPHP as web server
-CMD php bin/console cache:clear --no-warmup && \
-    exec frankenphp run --config /etc/caddy/Caddyfile --adapter caddyfile
-
-
 USER root
 # Change app ownership
 RUN chown -R $APP_USER:$APP_USER /app

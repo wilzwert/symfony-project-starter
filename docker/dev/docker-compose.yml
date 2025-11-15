@@ -70,6 +70,7 @@ services:
       - ../../symfony/.env.dev:/app/.env.dev
       - ../../symfony/.env.test:/app/.env.test
       - ../../symfony/phpunit.xml:/app/phpunit.xml
+      - ../../symfony/phpstan.dist.neon:/app/phpstan.dist.neon
 
       # Mounting the vendor directory as a volume on a Windows host results in major performance issues
       # You can uncomment this line if you host runs on linux or macOS

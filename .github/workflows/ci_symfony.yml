@@ -1,4 +1,4 @@
-name: CI
+name: CI for Symfony
 
 concurrency:
   group: ${{ github.ref }}.ci
@@ -17,57 +17,174 @@ on:
       - master
 
 jobs:
-  backend-tests:
-    name: Run backend tests and publish coverage
+  setup:
+    name: Setup project
     runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: symfony
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Prepare docker environment
-        working-directory: docker/dev
-        run: |
-          cp .env.dist .env
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.4"
+          extensions: intl, pdo_pgsql, redis, zip
+
+      - name: Install Composer dependencies
+        run: composer install --no-interaction --prefer-dist
+
+      - name: Upload vendor
+        uses: actions/upload-artifact@v4
+        with:
+          name: vendor
+          path: symfony/vendor
+
+  test:
+    name: Run tests with coverage
+    runs-on: ubuntu-latest
+    needs: setup
+    env:
+      TESTCONTAINERS_HOST: 127.0.0.1
+
+    defaults:
+      run:
+        working-directory: symfony
+
+    steps:
+      - uses: actions/checkout@v4
 
       - name: Prepare symfony environment
-        working-directory: symfony
         run: |
           cp .env.test.dist .env.test
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.4"
+          extensions: intl, pdo_pgsql, redis, zip
+          coverage: xdebug
 
-      - name: Check current directory and list files
+      - name: Download vendor
+        uses: actions/download-artifact@v6
+        with:
+          name: vendor
+          path: symfony/vendor
+
+      - name: Fix executable permissions
+        run: chmod +x vendor/bin/phpunit vendor/bin/coverage-check
+
+      - name: Run tests with coverage
+        id: run-tests
+        run: composer test
+        # this step may fail if minimum coverage is not reached, but we need do continue anyway
+        # because we need to update coverage report and run sonar scan later
+        continue-on-error: true
+
+      # if coverage doesn't exist, something bad happened, and we can't go further
+      - name: Verify coverage report existence and stop if missing
         run: |
-          echo "Current directory:"
-          pwd
-          echo "Files here:"
-          ls -la docker/dev
-
-      - name: Build Docker images
-        run: docker compose -f ./docker/dev/docker-compose.yml build --no-cache
-
-      - name: Start services
-        run: docker compose -f ./docker/dev/docker-compose.yml up -d
-
-      - name: Execute tests inside container
-        run: docker compose -f ./docker/dev/docker-compose.yml exec -T app composer test
+          if [ ! -f "./coverage/clover.xml" ]; then          
+           echo "Error: File 'symfony/coverage/clover.xml' not found. Job failed."
+           exit 1
+          fi
+        shell: bash
 
       - name: Upload symfony coverage report artifact
         uses: actions/upload-artifact@v5
         with:
-          name: symfony-core-coverage
-          path: ./symfony/coverage
+          name: symfony-coverage
+          path: symfony/coverage
           retention-days: 7
 
-      - name: Sonar Scan
+  analysis:
+    name: Static analysis with phpstan
+    needs: setup
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: symfony
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: pdo_pgsql, redis, intl, zip
+
+      - name: Download vendor
+        uses: actions/download-artifact@v6
+        with:
+          name: vendor
+          path: symfony/vendor
+
+      - name: Fix executable permissions
+        run: chmod +x vendor/bin/phpstan
+
+      - name: Run PHPStan
+        run: vendor/bin/phpstan > phpstan-report.txt || true
+
+      - name: Upload PHPStan report (optional)
+        if: always()
+        uses: actions/upload-artifact@v5
+        with:
+          name: phpstan-report
+          path: symfony/phpstan-report.txt
+          retention-days: 7
+
+  quality:
+    name: Sonar Scan analysis + quality gate
+    needs: test
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: symfony
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Download coverage
+        uses: actions/download-artifact@v6
+        with:
+          name: symfony-coverage
+          path: symfony/coverage
+
+      # Run SonarQube analysis on push or manual run
+      - name: Sonar scan on push or manual run
+        if: ${{ github.event_name == 'push' || github.event_name == 'workflow_dispatch' }}
         uses: SonarSource/sonarqube-scan-action@v6
         with:
           projectBaseDir: symfony
+          args: >
+            -Dsonar.branch.name=${{ github.ref_name }}
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_SYMFONY }}
 
-      - name: Stop services
-        if: always()
-        run: docker compose -f ./docker/dev/docker-compose.yml down -v
+      # Run SonarQube analysis on pull request
+      - name: Sonar scan on pull request
+        if: ${{ github.event_name == 'pull_request' }}
+        uses: SonarSource/sonarqube-scan-action@v6
+        with:
+          projectBaseDir: symfony
+          args: >
+            -Dsonar.pullrequest.key=${{ github.event.pull_request.number }}
+            -Dsonar.pullrequest.branch=${{ github.head_ref }}
+            -Dsonar.pullrequest.base=${{ github.base_ref }}
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_SYMFONY }}
+
+      - name: SonarQube Quality Gate Check
+        id: quality-gate
+        uses: sonarsource/sonarqube-quality-gate-action@master
+        with:
+          scanMetadataReportFile: symfony/.scannerwork/report-task.txt
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_SYMFONY }}

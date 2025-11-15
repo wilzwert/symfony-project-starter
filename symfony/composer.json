@@ -30,6 +30,7 @@
         "esi/phpunit-coverage-check": "^3.0",
         "friendsofphp/php-cs-fixer": "^3.89.2",
         "phpstan/phpstan": "^2.1.32",
+        "phpstan/phpstan-doctrine": "^2.0.11",
         "phpunit/phpunit": "^12.4.3",
         "symfony/http-client": "^7.3.6",
         "testcontainers/testcontainers": "^1.0.3"

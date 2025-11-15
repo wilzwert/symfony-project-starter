@@ -1,0 +1,17 @@
+# See .env to set useful environment vars
+
+services:
+
+  app:
+    image: ${CI_IMAGE}
+    extra_hosts:
+      - "host.docker.internal=host-gateway"
+    restart: unless-stopped
+    user: root
+    volumes:
+      # Mounting docker socket to allow TestContainers to create containers
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - XDEBUG_MODE=debug
+      - XDEBUG_START_WITH_REQUEST=yes
+      - XDEBUG_CONFIG=client_host=host.docker.internal
