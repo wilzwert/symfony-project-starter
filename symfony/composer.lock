@@ -4953,16 +4953,16 @@
     "packages-dev": [
         {
             "name": "beluga-php/docker-php",
-            "version": "v1.45.4",
+            "version": "v1.45.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/beluga-php/docker-php.git",
-                "reference": "c81738c945052b3a80b80c4532ce4f10df459242"
+                "reference": "00fac8e12f5460c78a5c79ee75d8792b444b6a62"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/beluga-php/docker-php/zipball/c81738c945052b3a80b80c4532ce4f10df459242",
-                "reference": "c81738c945052b3a80b80c4532ce4f10df459242",
+                "url": "https://api.github.com/repos/beluga-php/docker-php/zipball/00fac8e12f5460c78a5c79ee75d8792b444b6a62",
+                "reference": "00fac8e12f5460c78a5c79ee75d8792b444b6a62",
                 "shasum": ""
             },
             "require": {
@@ -4998,8 +4998,7 @@
                     "1.42": "1.42.x-dev",
                     "1.43": "1.43.x-dev",
                     "1.44": "1.44.x-dev",
-                    "1.45": "1.45.x-dev",
-                    "dev-master": "1.46.x-dev"
+                    "dev-master": "1.45.x-dev"
                 }
             },
             "autoload": {
@@ -5014,7 +5013,7 @@
             "description": "A Docker PHP client",
             "support": {
                 "issues": "https://github.com/beluga-php/docker-php/issues",
-                "source": "https://github.com/beluga-php/docker-php/tree/v1.45.4"
+                "source": "https://github.com/beluga-php/docker-php/tree/v1.45.5"
             },
             "funding": [
                 {
@@ -5022,7 +5021,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2025-05-25T15:03:33+00:00"
+            "time": "2025-11-15T00:36:57+00:00"
         },
         {
             "name": "beluga-php/docker-php-api",

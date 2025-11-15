@@ -63,7 +63,7 @@ jobs:
       - name: Cache Composer (host cache - helps local composer if used)
         uses: actions/cache@v4
         with:
-          path: ~/.composer/cache
+          path: ~/.cache/composer
           key: composer-${{ runner.os }}-${{ hashFiles('symfony/composer.lock') }}
           restore-keys: composer-${{ runner.os }}-
 
@@ -139,6 +139,8 @@ jobs:
       - name: SonarQube Quality Gate Check
         id: quality-gate
         uses: sonarsource/sonarqube-quality-gate-action@master
+        with:
+          scanMetadataReportFile: ./symfony/.scannerwork/sonar-report.json
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_SYMFONY }}
         continue-on-error: true
