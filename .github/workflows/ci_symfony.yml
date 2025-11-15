@@ -95,7 +95,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: build
     env:
-      CI_IMAGE: ${{ env.IMAGE_NAME }}:${{ needs.build.outputs.image-tag }}
+      CI_IMAGE: ${{ vars.IMAGE_NAME }}:${{ needs.build.outputs.image-tag }}
 
     defaults:
       run:
