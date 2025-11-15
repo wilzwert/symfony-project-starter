@@ -109,6 +109,10 @@ jobs:
         run: |
           CI_IMAGE=${{ env.IMAGE_NAME }}:${{ needs.build.outputs.image-tag }} docker compose  up -d
 
+      - name: Debug image content
+        run: |
+          CI_IMAGE=${{ env.IMAGE_NAME }}:${{ needs.build.outputs.image-tag }} docker compose exec app ls -la ./
+
       - name: Run tests with coverage
         id: run-tests
         run: |
