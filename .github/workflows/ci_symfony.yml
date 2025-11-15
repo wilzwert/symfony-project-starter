@@ -82,6 +82,8 @@ jobs:
           push: true
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache,mode=max
+          build-args:
+            BUILD_ID=$(date +%s)
 
   test:
     name: Tests

@@ -4,6 +4,7 @@ FROM dunglas/frankenphp:php8.4 AS base
 ARG UID=1000
 ARG GID=1000
 ARG APP_USER=symfony
+ARG BUILD_ID=0
 
 # Install sudo to allow our entrypoint to set ownership on docker.sock
 # Create a symfony user to avoid working as root
@@ -33,7 +34,7 @@ COPY --from=composer:2.9.1 /usr/bin/composer /usr/bin/composer
 COPY docker/ci/php.ini /usr/local/etc/php/php.ini
 
 # copy only files needed for composer install to benefit from layer cache
-COPY symfony/composer.json symfony/composer.lock /app/
+COPY symfony/composer.json symfony/composer.lock ./
 
 RUN composer install --no-interaction --prefer-dist --no-progress --no-scripts --ignore-platform-reqs \
     && rm -rf /root/.cache/composer/*
