@@ -110,7 +110,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Pull CI image
-        run: docker pull ${{ env.IMAGE_NAME }}:${{ steps.set-tag.outputs.image-tag }}
+        run: docker pull ${{ env.IMAGE_NAME }}:${{ needs.build.outputs.image-tag }}
 
       - name: Start services
         run: docker compose  up -d
@@ -187,4 +187,5 @@ jobs:
         uses: actions/upload-artifact@v5
         with:
           name: phpstan-report
-          path: phpstan-report.txt
+          path: symfony/phpstan-report.txt
+          retention-days: 7
