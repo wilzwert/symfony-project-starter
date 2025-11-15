@@ -113,9 +113,7 @@ jobs:
         run: docker pull ${{ env.IMAGE_NAME }}:${{ needs.build.outputs.image-tag }}
 
       - name: Start services
-        run: docker compose  up -d
-        env:
-          CI_IMAGE: ${{ env.IMAGE_NAME }}:${{ needs.build.outputs.image-tag }}
+        run: docker compose  up -d -e CI_IMAGE=${{ env.IMAGE_NAME }}:${{ needs.build.outputs.image-tag }}
 
       - name: Run tests with coverage
         id: run-tests
@@ -150,7 +148,7 @@ jobs:
         id: quality-gate
         uses: sonarsource/sonarqube-quality-gate-action@master
         with:
-          scanMetadataReportFile: symfony/.scannerwork/sonar-report.json
+          scanMetadataReportFile: ${{ github.workspace }}/symfony/.scannerwork/sonar-report.json
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_SYMFONY }}
         continue-on-error: true
