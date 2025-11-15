@@ -3,7 +3,7 @@
 services:
 
   app:
-    image: app-ci:latest
+    image: ${CI_IMAGE}
     extra_hosts:
       - "host.docker.internal=host-gateway"
     restart: unless-stopped
