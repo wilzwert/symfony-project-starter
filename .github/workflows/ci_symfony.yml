@@ -175,7 +175,6 @@ jobs:
         with:
           projectBaseDir: symfony
           args: >
-            -Dsonar.branch.name=${{ github.ref_name }}
             -Dsonar.pullrequest.key=${{ github.event.pull_request.number }}
             -Dsonar.pullrequest.branch=${{ github.head_ref }}
             -Dsonar.pullrequest.base=${{ github.base_ref }}
