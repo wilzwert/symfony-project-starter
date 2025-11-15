@@ -13,8 +13,6 @@ RUN addgroup --gid $GID $APP_USER \
 # ---- build stage: install dependencies (cached layer) ----
 FROM base AS deps
 
-RUN echo "---- ACTUAL DOCKERFILE USED ----" && pwd && ls -R /
-
 # Install PHP extensions for Symfony + PostgreSQL + Redis
 RUN install-php-extensions \
     pdo_pgsql \
@@ -41,6 +39,9 @@ RUN composer install --no-interaction --prefer-dist --no-progress --no-scripts -
 
 # ---- test/runtime stage: copy full app and vendor from deps ----
 FROM base AS runner
+
+# copy composer from deps
+COPY --from=deps /usr/bin/composer /usr/bin/composer
 
 # copy full project
 COPY symfony /app
