@@ -73,7 +73,4 @@ RUN chmod +x /usr/local/bin/entrypoint.sh
 
 USER $APP_USER
 
-# Launch FrankenPHP
-# CMD frankenphp run --config /etc/caddy/Caddyfile --adapter caddyfile
-
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
