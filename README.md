@@ -119,7 +119,7 @@ To execute tests without coverage :
 There are 2 tests suites by default : 'Unit' and 'Integration'. You can use the `--testsuites` command line option to select one.
 
 Important : all integration tests (extending KernelTestCase, WebTestCase...) filenames MUST end with 'IT.php' to be detected. 
-This is a personal convention ; it can be changed in the `isIntegrationTest` method [symfony/tests/bootstrap/TestSuiteService.php](symfony/tests/bootstrap/TestSuiteService.php).
+This is a personal convention ; it can be changed in the `isIntegrationTest` method in [TestSuiteService.php](symfony/tests/bootstrap/TestSuiteService.php).
 
 TestContainers are only started in integration testing ; unit tests by definition don't need them and run much faster.
 By default, in integration testing, 2 test containers are created : 
@@ -131,7 +131,7 @@ This is done by subscribing to PHPUnit events (see subscribers and test containe
 
 ### PHPStan
 
-Run PHPStan in your docker app container.
+Run PHPStan in your docker app container. By default it uses the [phpstan.dist.neon](symfony/phpstan.dist.neon) config file.
 
 `vendor/bin/phpstan`
 
