@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1763386537">
-  <project timestamp="1763386537" name="Clover Coverage">
+<coverage generated="1763389690">
+  <project timestamp="1763389690" name="Clover Coverage">
     <package name="App\Controller">
       <file name="/home/runner/work/symfony-project-starter/symfony-project-starter/symfony/src/Controller/SampleController.php">
         <class name="App\Controller\SampleController" namespace="App\Controller">
@@ -17,14 +17,14 @@
         <line num="37" type="stmt" count="2"/>
         <line num="40" type="method" name="create" visibility="public" complexity="1" crap="1" count="1"/>
         <line num="43" type="stmt" count="1"/>
-        <line num="44" type="stmt" count="1"/>
         <line num="45" type="stmt" count="1"/>
         <line num="46" type="stmt" count="1"/>
         <line num="47" type="stmt" count="1"/>
         <line num="48" type="stmt" count="1"/>
-        <line num="51" type="method" name="get" visibility="public" complexity="1" crap="1" count="1"/>
-        <line num="54" type="stmt" count="1"/>
-        <metrics loc="57" ncloc="54" classes="1" methods="4" coveredmethods="3" conditionals="5" coveredconditionals="4" statements="14" coveredstatements="13" elements="23" coveredelements="20"/>
+        <line num="49" type="stmt" count="1"/>
+        <line num="52" type="method" name="get" visibility="public" complexity="1" crap="1" count="1"/>
+        <line num="55" type="stmt" count="1"/>
+        <metrics loc="58" ncloc="55" classes="1" methods="4" coveredmethods="3" conditionals="5" coveredconditionals="4" statements="14" coveredstatements="13" elements="23" coveredelements="20"/>
       </file>
     </package>
     <package name="App\DataFixtures">
@@ -65,23 +65,23 @@
         <class name="App\Entity\SampleEntity" namespace="App\Entity">
           <metrics complexity="6" methods="6" coveredmethods="3" conditionals="6" coveredconditionals="3" statements="10" coveredstatements="5" elements="22" coveredelements="11"/>
         </class>
-        <line num="29" type="method" name="__construct" visibility="public" complexity="1" crap="1" count="2"/>
-        <line num="31" type="stmt" count="2"/>
-        <line num="33" type="stmt" count="2"/>
-        <line num="34" type="stmt" count="2"/>
-        <line num="37" type="method" name="getId" visibility="public" complexity="1" crap="1" count="5"/>
-        <line num="39" type="stmt" count="5"/>
-        <line num="42" type="method" name="setId" visibility="public" complexity="1" crap="2" count="0"/>
-        <line num="44" type="stmt" count="0"/>
-        <line num="46" type="stmt" count="0"/>
-        <line num="49" type="method" name="getName" visibility="public" complexity="1" crap="1" count="5"/>
-        <line num="51" type="stmt" count="5"/>
-        <line num="54" type="method" name="setName" visibility="public" complexity="1" crap="2" count="0"/>
+        <line num="22" type="method" name="__construct" visibility="public" complexity="1" crap="1" count="2"/>
+        <line num="24" type="stmt" count="2"/>
+        <line num="26" type="stmt" count="2"/>
+        <line num="27" type="stmt" count="2"/>
+        <line num="30" type="method" name="getId" visibility="public" complexity="1" crap="1" count="5"/>
+        <line num="32" type="stmt" count="5"/>
+        <line num="35" type="method" name="setId" visibility="public" complexity="1" crap="2" count="0"/>
+        <line num="37" type="stmt" count="0"/>
+        <line num="39" type="stmt" count="0"/>
+        <line num="42" type="method" name="getName" visibility="public" complexity="1" crap="1" count="5"/>
+        <line num="44" type="stmt" count="5"/>
+        <line num="47" type="method" name="setName" visibility="public" complexity="1" crap="2" count="0"/>
+        <line num="50" type="stmt" count="0"/>
+        <line num="52" type="stmt" count="0"/>
+        <line num="55" type="method" name="getCreatedAt" visibility="public" complexity="1" crap="2" count="0"/>
         <line num="57" type="stmt" count="0"/>
-        <line num="59" type="stmt" count="0"/>
-        <line num="62" type="method" name="getCreatedAt" visibility="public" complexity="1" crap="2" count="0"/>
-        <line num="64" type="stmt" count="0"/>
-        <metrics loc="67" ncloc="60" classes="1" methods="6" coveredmethods="3" conditionals="6" coveredconditionals="3" statements="10" coveredstatements="5" elements="22" coveredelements="11"/>
+        <metrics loc="60" ncloc="58" classes="1" methods="6" coveredmethods="3" conditionals="6" coveredconditionals="3" statements="10" coveredstatements="5" elements="22" coveredelements="11"/>
       </file>
     </package>
     <package name="App">
@@ -97,23 +97,23 @@
         <class name="App\Repository\DoctrineSampleEntityRepository" namespace="App\Repository">
           <metrics complexity="4" methods="4" coveredmethods="4" conditionals="4" coveredconditionals="4" statements="8" coveredstatements="8" elements="16" coveredelements="16"/>
         </class>
-        <line num="18" type="method" name="__construct" visibility="public" complexity="1" crap="1" count="7"/>
-        <line num="20" type="stmt" count="7"/>
-        <line num="23" type="method" name="findById" visibility="public" complexity="1" crap="1" count="2"/>
-        <line num="25" type="stmt" count="2"/>
-        <line num="33" type="method" name="findByName" visibility="public" complexity="1" crap="1" count="4"/>
+        <line num="17" type="method" name="__construct" visibility="public" complexity="1" crap="1" count="7"/>
+        <line num="19" type="stmt" count="7"/>
+        <line num="22" type="method" name="findById" visibility="public" complexity="1" crap="1" count="2"/>
+        <line num="24" type="stmt" count="2"/>
+        <line num="30" type="method" name="findByName" visibility="public" complexity="1" crap="1" count="4"/>
+        <line num="32" type="stmt" count="4"/>
+        <line num="33" type="stmt" count="4"/>
+        <line num="34" type="stmt" count="4"/>
         <line num="35" type="stmt" count="4"/>
         <line num="36" type="stmt" count="4"/>
-        <line num="37" type="stmt" count="4"/>
-        <line num="38" type="stmt" count="4"/>
-        <line num="39" type="stmt" count="4"/>
-        <line num="42" type="method" name="save" visibility="public" complexity="1" crap="1" count="1"/>
-        <line num="44" type="stmt" count="1"/>
-        <metrics loc="47" ncloc="37" classes="1" methods="4" coveredmethods="4" conditionals="4" coveredconditionals="4" statements="8" coveredstatements="8" elements="16" coveredelements="16"/>
+        <line num="39" type="method" name="save" visibility="public" complexity="1" crap="1" count="1"/>
+        <line num="41" type="stmt" count="1"/>
+        <metrics loc="44" ncloc="36" classes="1" methods="4" coveredmethods="4" conditionals="4" coveredconditionals="4" statements="8" coveredstatements="8" elements="16" coveredelements="16"/>
       </file>
     </package>
     <file name="/home/runner/work/symfony-project-starter/symfony-project-starter/symfony/src/Repository/SampleEntityRepository.php">
-      <metrics loc="22" ncloc="15" classes="0" methods="0" coveredmethods="0" conditionals="0" coveredconditionals="0" statements="0" coveredstatements="0" elements="0" coveredelements="0"/>
+      <metrics loc="21" ncloc="15" classes="0" methods="0" coveredmethods="0" conditionals="0" coveredconditionals="0" statements="0" coveredstatements="0" elements="0" coveredelements="0"/>
     </file>
     <file name="/home/runner/work/symfony-project-starter/symfony-project-starter/symfony/src/Service/CacheManager.php">
       <metrics loc="31" ncloc="13" classes="0" methods="0" coveredmethods="0" conditionals="0" coveredconditionals="0" statements="0" coveredstatements="0" elements="0" coveredelements="0"/>
@@ -141,21 +141,21 @@
         </class>
         <line num="17" type="method" name="__construct" visibility="public" complexity="1" crap="1" count="4"/>
         <line num="22" type="stmt" count="4"/>
-        <line num="28" type="method" name="search" visibility="public" complexity="1" crap="1" count="2"/>
-        <line num="30" type="stmt" count="2"/>
-        <line num="33" type="method" name="getById" visibility="public" complexity="1" crap="1" count="1"/>
-        <line num="35" type="stmt" count="1"/>
-        <line num="38" type="method" name="create" visibility="public" complexity="1" crap="1" count="1"/>
+        <line num="27" type="method" name="search" visibility="public" complexity="1" crap="1" count="2"/>
+        <line num="29" type="stmt" count="2"/>
+        <line num="32" type="method" name="getById" visibility="public" complexity="1" crap="1" count="1"/>
+        <line num="34" type="stmt" count="1"/>
+        <line num="37" type="method" name="create" visibility="public" complexity="1" crap="1" count="1"/>
+        <line num="39" type="stmt" count="1"/>
         <line num="40" type="stmt" count="1"/>
         <line num="41" type="stmt" count="1"/>
-        <line num="42" type="stmt" count="1"/>
         <line num="43" type="stmt" count="1"/>
         <metrics loc="46" ncloc="40" classes="1" methods="4" coveredmethods="4" conditionals="4" coveredconditionals="4" statements="7" coveredstatements="7" elements="15" coveredelements="15"/>
       </file>
     </package>
     <file name="/home/runner/work/symfony-project-starter/symfony-project-starter/symfony/src/Service/SampleEntityService.php">
-      <metrics loc="30" ncloc="15" classes="0" methods="0" coveredmethods="0" conditionals="0" coveredconditionals="0" statements="0" coveredstatements="0" elements="0" coveredelements="0"/>
+      <metrics loc="21" ncloc="15" classes="0" methods="0" coveredmethods="0" conditionals="0" coveredconditionals="0" statements="0" coveredstatements="0" elements="0" coveredelements="0"/>
     </file>
-    <metrics files="12" loc="422" ncloc="347" classes="7" methods="26" coveredmethods="21" conditionals="29" coveredconditionals="22" statements="52" coveredstatements="44" elements="107" coveredelements="87"/>
+    <metrics files="12" loc="403" ncloc="345" classes="7" methods="26" coveredmethods="21" conditionals="29" coveredconditionals="22" statements="52" coveredstatements="44" elements="107" coveredelements="87"/>
   </project>
 </coverage>
