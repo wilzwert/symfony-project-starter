@@ -61,6 +61,7 @@ jobs:
       - name: Prepare symfony environment
         run: |
           cp .env.test.dist .env.test
+          cp phpunit.dist.xml phpunit.xml
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
@@ -188,3 +189,39 @@ jobs:
           scanMetadataReportFile: symfony/.scannerwork/report-task.txt
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN_SYMFONY }}
+
+  reporting:
+    name: Add coverage to github pages, update Codecov
+    needs: test
+    runs-on: ubuntu-latest
+    # we only update pages and codecov if code has actually been pushed to main branch, or if workflow is run manually
+    # because we want coverage reports to reflect the actual master branch coverage state
+    if: ${{ (github.event_name == 'push' || github.event_name == 'workflow_dispatch') && github.ref == 'refs/heads/master' }}
+    defaults:
+      run:
+        working-directory: symfony
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Download coverage
+        uses: actions/download-artifact@v6
+        with:
+          name: symfony-coverage
+          path: symfony/coverage
+
+      - name: Publish symfony coverage report to Github Pages
+
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./symfony/coverage
+          destination_dir: ./coverage-symfony
+
+      - name: Upload symfony coverage report to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          flags: symfony
+          files: ./symfony/coverage/clover.xml
