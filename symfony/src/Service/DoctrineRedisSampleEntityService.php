@@ -16,18 +16,17 @@ readonly class DoctrineRedisSampleEntityService implements SampleEntityService
 {
     public function __construct(
         private EntityManagerInterface $entityManager,
-        private DefaultCacheManager    $cacheManager,
+        private DefaultCacheManager $cacheManager,
         private SampleEntityRepository $repository,
     ) {
     }
-
 
     /**
      * @throws InvalidArgumentException
      */
     public function search(string $q): array
     {
-        return $this->cacheManager->get('search_sample_entity_' . $q, fn () => $this->repository->findByName($q));
+        return $this->cacheManager->get('search_sample_entity_'.$q, fn () => $this->repository->findByName($q));
     }
 
     public function getById(int $id): ?SampleEntity
@@ -37,9 +36,10 @@ readonly class DoctrineRedisSampleEntityService implements SampleEntityService
 
     public function create(string $name): SampleEntity
     {
-        $entityToCreate =  new SampleEntity(null, $name);
+        $entityToCreate = new SampleEntity(null, $name);
         $this->repository->save($entityToCreate);
         $this->entityManager->flush();
+
         return $entityToCreate;
     }
 }

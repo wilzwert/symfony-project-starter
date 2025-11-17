@@ -14,7 +14,7 @@ readonly class SampleEntityResponse
     private string $name;
 
     public function __construct(
-        SampleEntity $sampleEntity
+        SampleEntity $sampleEntity,
     ) {
         $this->id = $sampleEntity->getId();
         $this->name = $sampleEntity->getName();

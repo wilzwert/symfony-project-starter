@@ -20,7 +20,7 @@ use Symfony\Component\Routing\Attribute\Route;
 final class SampleController extends AbstractController
 {
     public function __construct(
-        private readonly SampleEntityService $sampleEntityService
+        private readonly SampleEntityService $sampleEntityService,
     ) {
     }
 
@@ -41,6 +41,7 @@ final class SampleController extends AbstractController
     public function create(#[MapRequestPayload] CreateSampleEntityRequest $createSampleEntityRequest): JsonResponse
     {
         $created = $this->sampleEntityService->create($createSampleEntityRequest->getName());
+
         return $this->json(
             new SampleEntityResponse($created),
             Response::HTTP_CREATED,

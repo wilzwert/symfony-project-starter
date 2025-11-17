@@ -12,7 +12,6 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
  */
 class CacheManagerIT extends KernelTestCase
 {
-
     private CacheManager $cacheManager;
 
     private SampleEntityRepository $repository;
@@ -36,5 +35,4 @@ class CacheManagerIT extends KernelTestCase
 
         self::assertCount(1, $entitiesFromCache);
     }
-
 }

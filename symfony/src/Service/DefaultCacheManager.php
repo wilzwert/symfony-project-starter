@@ -11,7 +11,7 @@ use Symfony\Contracts\Cache\ItemInterface;
 readonly class DefaultCacheManager implements CacheManager
 {
     public function __construct(
-        private CacheInterface $cache
+        private CacheInterface $cache,
     ) {
     }
 

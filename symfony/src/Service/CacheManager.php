@@ -5,26 +5,26 @@ namespace App\Service;
 use Psr\Cache\InvalidArgumentException;
 
 /**
- * A dummy cache manager
+ * A dummy cache manager.
  *
  * @author Wilhelm Zwertvaegher
  */
 interface CacheManager
 {
     /**
-     * Simple cache retrieval with a callback that actually loads the data if not cached
+     * Simple cache retrieval with a callback that actually loads the data if not cached.
      *
-     * @param string $key the cache key
+     * @param string   $key      the cache key
      * @param callable $callback to load the actual data if cache is not available
-     * @return array<Object> the actual data
+     *
+     * @return array<object> the actual data
+     *
      * @throws InvalidArgumentException
      */
     public function get(string $key, callable $callback): array;
 
     /**
-     * Clears the cache
-     *
-     * @return void
+     * Clears the cache.
      */
     public function clear(): void;
 }

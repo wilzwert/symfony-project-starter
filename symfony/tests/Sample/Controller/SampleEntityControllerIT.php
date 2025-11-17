@@ -17,7 +17,7 @@ class SampleEntityControllerIT extends WebTestCase
         $client = self::createClient();
 
         $client->jsonRequest('POST', '/api/samples', [
-            'name' => 'Created'
+            'name' => 'Created',
         ]);
 
         self::assertResponseStatusCodeSame(Response::HTTP_CREATED);

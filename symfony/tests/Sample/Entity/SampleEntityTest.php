@@ -11,12 +11,10 @@ use PHPUnit\Framework\TestCase;
  */
 class SampleEntityTest extends TestCase
 {
-
     #[Test]
     public function shouldExposeProvidedProperties(): void
     {
         $entity = new SampleEntity(2, 'name');
-        self::assertEquals(2,  $entity->getId());
+        self::assertEquals(2, $entity->getId());
     }
-
 }

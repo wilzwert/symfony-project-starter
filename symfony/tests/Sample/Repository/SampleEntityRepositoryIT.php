@@ -3,7 +3,6 @@
 namespace App\Tests\Sample\Repository;
 
 use App\Repository\SampleEntityRepository;
-use Doctrine\ORM\EntityManagerInterface;
 use PHPUnit\Framework\Attributes\Test;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
@@ -20,7 +19,6 @@ class SampleEntityRepositoryIT extends KernelTestCase
         $container = static::getContainer();
 
         $this->repository = $container->get(SampleEntityRepository::class);
-
     }
 
     #[Test]
@@ -41,5 +39,4 @@ class SampleEntityRepositoryIT extends KernelTestCase
         self::assertSame('sample test entity', $found[0]->getName());
         self::assertSame(1, $found[0]->getId());
     }
-
 }

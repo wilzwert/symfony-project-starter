@@ -8,7 +8,7 @@ namespace App\Dto;
 readonly class CreateSampleEntityRequest
 {
     public function __construct(
-        private string $name
+        private string $name,
     ) {
     }
 

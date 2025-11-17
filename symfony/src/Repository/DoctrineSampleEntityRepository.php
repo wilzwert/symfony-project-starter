@@ -9,9 +9,8 @@ use Doctrine\Persistence\ManagerRegistry;
 
 /**
  * @extends ServiceEntityRepository<SampleEntity>
+ *
  * @method SampleEntity|null find(int $id)
- *
- *
  */
 class DoctrineSampleEntityRepository extends ServiceEntityRepository implements SampleEntityRepository
 {
@@ -25,16 +24,14 @@ class DoctrineSampleEntityRepository extends ServiceEntityRepository implements 
         return parent::find($id);
     }
 
-
     /**
-     * @param string $name
      * @return SampleEntity[]
      */
     public function findByName(string $name): array
     {
         return $this->createQueryBuilder('s')
             ->where('s.name LIKE :name')
-            ->setParameter('name', '%' . mb_strtolower($name) . '%')
+            ->setParameter('name', '%'.mb_strtolower($name).'%')
             ->getQuery()
             ->getResult();
     }
