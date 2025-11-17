@@ -34,7 +34,7 @@ However, there are probably better ways to set up this kind of project so any fe
 
 ### Features
 
-- Full Docker dev environment, tested on Windows 11 (WSL 2) host and Linux (Pop!_OS)
+- Full Docker dev environment, tested on Windows 11 (WSL 2) host and Linux (Pop!_OS) : FrankenPHP, PostgreSQL, Redis
 - Preconfigured PHPUnit with standard values and Testcontainers
 - dama/doctrine-test-bundle used to wrap integration tests in transactions ; this is very useful to keep tests predictible and consistent, even when writing in the database
 - Preconfigured PHPStan with standard values
