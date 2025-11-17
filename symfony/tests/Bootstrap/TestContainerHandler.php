@@ -3,6 +3,8 @@
 namespace App\Tests\Bootstrap;
 
 /**
+ * A Testcontainer handler with utility methods.
+ *
  * @author Wilhelm Zwertvaegher
  */
 interface TestContainerHandler

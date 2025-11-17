@@ -8,7 +8,7 @@ use PHPUnit\Event\TestRunner\ExecutionStartedSubscriber;
 use Symfony\Component\Process\Process;
 
 /**
- * Loads fixtures on tests execution start if integration tests are present.
+ * Loads fixtures on tests execution start if integration tests are detected.
  *
  * @author Wilhelm Zwertvaegher
  */

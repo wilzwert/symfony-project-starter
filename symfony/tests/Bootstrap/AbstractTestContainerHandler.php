@@ -2,11 +2,12 @@
 
 namespace App\Tests\Bootstrap;
 
+use Exception;
 use Testcontainers\Container\GenericContainer;
 use Testcontainers\Container\StartedGenericContainer;
 
 /**
- * TestContainer handler for starting, stopping and generating env vars if necessary.
+ * TestContainer handler for starting, stopping a container, and generating env vars if necessary.
  *
  * @author Wilhelm Zwertvaegher
  */
@@ -18,7 +19,7 @@ abstract class AbstractTestContainerHandler implements TestContainerHandler
     public function getHost(): string
     {
         if (!$this->container) {
-            throw new \Exception('Host cannot be determined before the container is started.');
+            throw new Exception('Host cannot be determined before the container is started.');
         }
         // return $this->container->getHost();
         return getenv('TESTCONTAINERS_HOST') ?: 'host.docker.internal';
@@ -27,7 +28,7 @@ abstract class AbstractTestContainerHandler implements TestContainerHandler
     /**
      * @return list<string>
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public function getEnvVars(): array
     {
@@ -38,6 +39,9 @@ abstract class AbstractTestContainerHandler implements TestContainerHandler
         )];
     }
 
+    /**
+     * @throws Exception
+     */
     public function start(): void
     {
         if (!$this->container instanceof StartedGenericContainer) {

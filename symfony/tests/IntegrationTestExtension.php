@@ -14,11 +14,14 @@ use PHPUnit\Runner\Extension\ParameterCollection;
 use PHPUnit\TextUI\Configuration\Configuration;
 
 /**
+ * PHPUnit bootstrap extension
+ * Sets up services and handlers to inject into events subscribers
+ * Instantiate subscribers.
+ *
  * @author Wilhelm Zwertvaegher
  */
 final class IntegrationTestExtension implements Extension
 {
-
     public function bootstrap(Configuration $configuration, Facade $facade, ParameterCollection $parameters): void
     {
         $testSuiteService = new TestSuiteService();

@@ -14,8 +14,9 @@
   - [Goals](#goals)
   - [Features](#features)
 - [Usage](#usage)
-    - [Docker](#docker)
-    - [Symfony](#symfony)
+  - [Requirements](#requirements)
+  - [Docker](#docker)
+  - [Symfony](#symfony)
 - [Local testing / quality analysis](#local-testing--quality-analysis)
     - [Symfony project](#symfony-project)
     - [PHPSTan](#phpstan)
@@ -44,7 +45,16 @@ However, there are probably better ways to set up this kind of project so any fe
 
 ## Usage
 
-If you wish to use this project as a "Symfony starter", you have some configuration to do.
+### Requirements
+
+Your host system must have a usable Docker environment : 
+
+- Windows host : Docker Desktop (WSL 2)
+- Linux : docker, docker compose
+
+I'm not sure what versions are needed but this project has been tested with Docker Desktop >= 4.49 (Windows) and docker >= 28.5 in Pop!_OS.
+
+If you wish to use this project as a "Symfony starter", you also have some configuration to do.
 
 ### Docker
 
@@ -56,18 +66,38 @@ You can use the docker/dev/docker-compose.yml to provide
 The environment should be usable as is, but you can (should) configure some variables.  
 In docker/dev, copy .env.dist to .env and adapt to your configuration.
 
-The docker/dev/docker-compose.yml is designed to be portable, and does a lot of mounting to be able to work 
+The [docker/dev/docker-compose.yml](docker/dev/docker-compose.yml) is designed to be portable, and does a lot of mounting to be able to work 
 on a Windows host without compromising perfs. If you're on a Linux host, you can mount the whole app as a single volume 
 `../../symfony:/app`
+
+Build from project root with `docker compose -f docker/dev/docker-compose.yml build`, 
+run with `docker compose -f docker/dev/docker-compose.yml up -d` 
 
 ### Symfony
 Copy all .env.*.dist to .env.* and adapt to your configuration. You should set up an APP_SECRET, and may want 
 to change the DATABASE_URL and REDIS_URL in .env.dev if you changed the docker/dev/.env variables.
 
 As for testing, you may copy the PHPUnit.dist.xml to PHPUnit.xml and configure appropriately, 
-although PHPUnit.dist.xml should also work without specific configurations. 
-You don't have to modify .env.test by default because Testcontainers automatically sets up ephemeral PostgreSQL and Redis containers. 
+although PHPUnit.dist.xml should also work without specific configuration. 
+You don't have to modify .env.test by default because Testcontainers automatically sets up ephemeral PostgreSQL and 
+Redis containers.
 
+Base dependencies are installed by building the Docker image.
+When new dependencies are needed, run usual commands in your docker container :
+`composer require package/name`, `composer require --dev package/name`, `composer update` and so on.
+
+
+### IDE
+
+One of the benefits of having a distributable docker environment is to provide PHP tooling without installing it locally on your host.
+
+I personally use PHPStorm, which allows to (among lots of other stuff) : 
+- use the PHP available in your container as a CLI Interpreter
+- configure PHPStorm for debug sessions with XDebug 
+- configure different test run configurations for PHPUnit
+- run tests both in the container and PHPStorm
+- use the container's composer, which is useful if your hosts runs on Windows and you have to manually "install" the vendor directory which is not 
+mounted ny default due to performances issues. That way you can benefit from PHPStorm's completion, code browsing...
 
 ## Local testing / quality analysis
 
@@ -75,15 +105,21 @@ You don't have to modify .env.test by default because Testcontainers automatical
 
 Tests can be run (unit and integration) in the docker dev container :
 
-To execute tests with code coverage and HTML report :  
-  `XDEBUG_MODE=coverage vendor/bin/PHPUnit`
+To execute tests with code coverage check and report :
+    
+`composer test`
+
+By default, code coverage below 80% will fail.
+
 
 To execute tests without coverage :
- `vendor/bin/PHPUnit --no-coverage`
+
+`vendor/bin/PHPUnit --no-coverage`
 
 There are 2 tests suites by default : 'Unit' and 'Integration'. You can use the `--testsuites` command line option to select one.
 
-Important : all integration tests (extending KernelTestCase, WebTestCase...) filenames MUST end with 'IT.php' to be detected.
+Important : all integration tests (extending KernelTestCase, WebTestCase...) filenames MUST end with 'IT.php' to be detected. 
+This is a personal convention ; it can be changed in the `isIntegrationTest` method [symfony/tests/bootstrap/TestSuiteService.php](symfony/tests/bootstrap/TestSuiteService.php).
 
 TestContainers are only started in integration testing ; unit tests by definition don't need them and run much faster.
 By default, in integration testing, 2 test containers are created : 
@@ -91,7 +127,7 @@ By default, in integration testing, 2 test containers are created :
 - PostgreSQL 16 -  fixtures for the database are loaded by launching commands for schema creation then fixtures with Doctrine Fixtures
 - Redis 7
 
-You may also execute tests in your IDE but this requires a bit of configuration (at least in PHPStorm) to use the container's PHP as interpreter, set up the directories aliases, use the appropriate PHPUnit.xml...
+This is done by subscribing to PHPUnit events (see subscribers and test container handlers in [symfony/tests/bootstrap](symfony/tests/bootstrap)).
 
 ### PHPStan
 
@@ -101,13 +137,13 @@ Run PHPStan in your docker app container.
 
 ### PHP CS Fixer
 
-Run PHP CS Fixer in your docker app container.
+Run PHP CS Fixer in your docker app container, e.g:
 
-`vendor/bin/php-cs-fixer`
+`vendor/bin/php-cs-fixer fix`
 
 ## Symfony CI
 
-See ./github/workflows/ci_symfony.yml for CI.
+See [.github/workflows/ci_symfony.yml](.github/workflows/ci_symfony.yml) for CI.
 
 At the moment it is designed to : 
 - run tests with coverage
