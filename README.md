@@ -1,4 +1,4 @@
-# My Symfony 7.3 Template
+# My Symfony 7.3 base project
 
 [![Backend CI](https://img.shields.io/github/actions/workflow/status/wilzwert/symfony-project-starter/ci_symfony.yml?label=Symfony%20CI&logo=Github)](https://github.com/wilzwert/symfony-project-starter/actions/workflows/ci_symfony.yml)
 
