@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1763377964">
-  <project timestamp="1763377964" name="Clover Coverage">
+<coverage generated="1763385669">
+  <project timestamp="1763385669" name="Clover Coverage">
     <package name="App\Controller">
       <file name="/home/runner/work/symfony-project-starter/symfony-project-starter/symfony/src/Controller/SampleController.php">
         <class name="App\Controller\SampleController" namespace="App\Controller">
